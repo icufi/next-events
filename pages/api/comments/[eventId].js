@@ -1,11 +1,16 @@
 import { MongoClient } from 'mongodb';
 
+import { connectDatabase, insertDocument } from '../../../helpers/db-util';
+
 async function handler(req, res) {
   const eventId = req.query.eventId;
-
-  const client = await MongoClient.connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.21ehf.mongodb.net/events?retryWrites=true&w=majority`
-  );
+  let client;
+  try {
+    client = connectDatabase();
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to connect to database.' });
+    return;
+  }
 
   if (req.method === 'POST') {
     const { email, name, text } = req.body;
@@ -28,21 +33,21 @@ async function handler(req, res) {
       eventId,
     };
 
-    const db = client.db();
+    await insertDocument(client, 'comments', newComment);
 
-    const result = await db.collection('comments').insertOne(newComment);
-
-    console.log('result', result);
-
-    newComment.id = result.insertedId;
+    newComment._id = result.insertedId;
 
     res.status(201).json({ message: 'Added comment.', comment: newComment });
   }
 
   if (req.method === 'GET') {
-   const db = client.db();
+    const db = client.db();
 
-   const documents = db.collection('comments').find().sort({_id: -1}).toArray();
+    const documents = db
+      .collection('comments')
+      .find()
+      .sort({ _id: -1 })
+      .toArray();
 
     res.status(200).json({ comments: documents });
   }
