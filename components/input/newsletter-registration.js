@@ -1,7 +1,7 @@
 import { useRef, useContext } from 'react';
 
 import classes from './newsletter-registration.module.css';
-import NotificationContext from '../../store/notifiation-context';
+import NotificationContext from '../../store/notification-context';
 
 function NewsletterRegistration() {
   const inputRef = useRef();

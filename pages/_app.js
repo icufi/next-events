@@ -1,7 +1,7 @@
 import Head from 'next/head';
 
 import Layout from '../components/layout/layout';
-import { NotificationContextProvider } from '../store/notifiation-context';
+import { NotificationContextProvider } from '../store/notification-context';
 
 import '../styles/globals.css';
 
